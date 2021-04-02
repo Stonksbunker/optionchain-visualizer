@@ -1,6 +1,7 @@
 import os
 import datetime
 import json
+import matplotlib.pyplot as plt
 import requests
 import numpy as np
 import math
@@ -19,12 +20,9 @@ def make_directory(name):
     except OSError as error:  
         print(error)
 
-
-# basic directories
 make_directory(today + '-data')
 make_directory('output')
 
-# headers that pass bot detection
 request_headers = {
     'Host':'www.nseindia.com', 
     'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:82.0) Gecko/20100101 Firefox/82.0',
@@ -40,28 +38,28 @@ request_headers = {
 
 nse_url = 'https://www.nseindia.com/'
 
-# list of FnO scrips
-fno_list_url = "https://www.nseindia.com/api/equity-stockIndices?index=SECURITIES%20IN%20F%26O"
-resp = requests.get(url=nse_url, headers=request_headers)
-if resp.ok:
-    req_cookies = dict(nsit=resp.cookies['nsit'], nseappid=resp.cookies['nseappid'], ak_bmsc=resp.cookies['ak_bmsc'])
-    response = requests.get(url=fno_list_url, headers=request_headers, cookies=req_cookies).json()
-    with open('fno_list.json', 'w') as f:
-        json.dump(response, f)
+# get name of all stocks
 
-with open('fno_list.json') as g:
-    fno_list = json.load(g)
+# fno_list_url = "https://www.nseindia.com/api/equity-stockIndices?index=SECURITIES%20IN%20F%26O"
+# resp = requests.get(url=nse_url, headers=request_headers)
+# if resp.ok:
+#     req_cookies = dict(nsit=resp.cookies['nsit'], nseappid=resp.cookies['nseappid'], ak_bmsc=resp.cookies['ak_bmsc'])
+#     response = requests.get(url=fno_list_url, headers=request_headers, cookies=req_cookies).json()
+#     with open('fno_list.json', 'w') as f:
+#         json.dump(response, f)
 
-fno_scrips = []
-for i in fno_list['data']:
-    fno_scrips.append(i['symbol'])
+# with open('fno_list.json') as g:
+#     fno_list = json.load(g)
 
+# fno_scrips = []
+# for i in fno_list['data']:
+#     fno_scrips.append(i['symbol'])
 
-# function for downloading, processing, and saving data 
+fno_scrips = ['DEEPAKNTR', 'IRCTC', 'GUJGASLTD', 'ZEEL', 'MOTHERSUMI', 'BEL', 'POWERGRID', 'GRANULES', 'ONGC', 'BERGEPAINT', 'MRF', 'GRASIM', 'APOLLOTYRE', 'NAM-INDIA', 'UPL', 'NAVINFLUOR', 'SHREECEM', 'ALKEM', 'SRTRANSFIN', 'ULTRACEMCO', 'ASIANPAINT', 'HEROMOTOCO', 'TVSMOTOR', 'KOTAKBANK', 'NMDC', 'TITAN', 'DIVISLAB', 'INDIGO', 'JINDALSTEL', 'RECLTD', 'VEDL', 'SIEMENS', 'ADANIPORTS', 'TATAPOWER', 'AARTIIND', 'TATACONSUM', 'BHEL', 'IOC', 'VOLTAS', 'JSWSTEEL', 'PEL', 'HDFC', 'PFC', 'TRENT', 'AUROPHARMA', 'EICHERMOT', 'SUNTV', 'HCLTECH', 'UBL', 'BATAINDIA', 'MARUTI', 'L&TFH', 'RAMCOCEM', 'ICICIPRULI', 'CUB', 'MCDOWELL-N', 'HINDPETRO', 'TATASTEEL', 'ACC', 'MINDTREE', 'SAIL', 'LT', 'BOSCHLTD', 'EXIDEIND', 'GAIL', 'TECHM', 'AUBANK', 'PFIZER', 'ICICIBANK', 'ADANIENT', 'BIOCON', 'AMARAJABAT', 'SUNPHARMA', 'BALKRISIND', 'LALPATHLAB', 'JUBLFOOD', 'AMBUJACEM', 'DLF', 'IBULHSGFIN', 'HDFCBANK', 'COALINDIA', 'M&M', 'ITC', 'TORNTPOWER', 'TATAMOTORS', 'BAJAJFINSV', 'CUMMINSIND', 'BRITANNIA', 'CONCOR', 'TCS', 'M&MFIN', 'INFY', 'HINDALCO', 'WIPRO', 'BPCL', 'BHARATFORG', 'SBIN', 'NESTLEIND', 'MARICO', 'CHOLAFIN', 'HAVELLS', 'PIDILITIND', 'SBILIFE', 'APOLLOHOSP', 'HINDUNILVR', 'NTPC', 'HDFCLIFE', 'RELIANCE', 'ASHOKLEY', 'AXISBANK', 'GMRINFRA', 'DRREDDY', 'LICHSGFIN', 'DABUR', 'BAJAJ-AUTO', 'TATACHEM', 'IGL', 'INDUSINDBK', 'LUPIN', 'PVR', 'GLENMARK', 'LTTS', 'COLPAL', 'LTI', 'APLLTD', 'CIPLA', 'RBLBANK', 'BAJFINANCE', 'MUTHOOTFIN', 'NAUKRI', 'ICICIGI', 'GODREJCP', 'PNB', 'TORNTPHARM', 'MGL', 'HDFCAMC', 'IDFCFIRSTB', 'PAGEIND', 'GODREJPROP', 'CADILAHC', 'PIIND', 'CANBK', 'NATIONALUM', 'SRF', 'FEDERALBNK', 'MFSL', 'MANAPPURAM', 'MPHASIS', 'COFORGE', 'PETRONET', 'IDEA', 'BANDHANBNK', 'INDUSTOWER', 'ESCORTS', 'BANKBARODA', 'BHARTIARTL']
 
-def output(scrip) :
+# get data of all stocks
 
-    # for downloading/saving scrip optionchain
+for scrip in fno_scrips:
     fno_data_url = 'https://www.nseindia.com/api/quote-derivative?symbol=' + requests.utils.quote(scrip)
     resp = requests.get(url=nse_url, headers=request_headers)
     if resp.ok:
@@ -70,14 +68,14 @@ def output(scrip) :
         with open('./data/'+ today +'-data/fno_data_' + scrip + '.json', 'w') as f:
             json.dump(response, f)
 
+
+def output(scrip) :
     make_directory('output/' + scrip)
     with open('./data/'+ today +'-data/fno_data_' + scrip + '.json') as g:
         perf = json.load(g)
 
-    # listing out all expiry dates
+    # all expiry dates
     dates = list(dict.fromkeys(perf['expiryDates']))
-
-    # range defines for how many expiry i want to perform operation bydefault only for current expiry
     for m in range(0,1):
         try:
             expiry = dates[m]
@@ -87,7 +85,6 @@ def output(scrip) :
         labels = []
         maxpain = []
 
-        # listing out all strike price
         for i in perf['stocks']:
             if i['metadata']['expiryDate'] == expiry:
                 labels.append(i['metadata']['strikePrice'])
@@ -95,9 +92,10 @@ def output(scrip) :
         labels = list(dict.fromkeys(labels))
         labels.sort()
 
-        # function to make list of data for each strike price
         def oi_count(type,value) :
+
             oi = []
+
             for i in labels:
                 temp = len(oi)
                 for j in perf['stocks']:
@@ -124,10 +122,16 @@ def output(scrip) :
 
         underlyingValue = perf['underlyingValue']
 
+        # if perf['underlyingValue'] < 1000:
+        #     value = round(perf['underlyingValue'], -1)
+        # elif perf['underlyingValue'] >= 1000:
+        #     value = round(perf['underlyingValue'], -2)
+        # elif perf['underlyingValue'] >= 10000:
+        #     value = round(perf['underlyingValue'], -3)
+
         strikePrices  = perf['strikePrices']
         strikePrices = list(dict.fromkeys(strikePrices))
         
-        # strike price nearest to spot price
         nearest = []
         l = 0
         for i in strikePrices:
@@ -136,8 +140,7 @@ def output(scrip) :
             if i < 0:
                 nearest[l] = nearest[l] * -1
                 l = l + 1
-
-        # IV of ATM option
+        
         value = strikePrices[nearest.index(min(nearest))]
         for j in perf['stocks']:
             if j['metadata']['expiryDate'] == expiry and j['metadata']['strikePrice'] == value:
@@ -146,9 +149,11 @@ def output(scrip) :
                 if j['metadata']['optionType'] == 'Put':
                     iv_put = j['marketDeptOrderBook']['otherInfo']['impliedVolatility']
 
-        # probability of strike price to be hit
+
         prob = []
         daysexpiry = (datetime.datetime.strptime(expiry,'%d-%b-%Y') - datetime.datetime.strptime(today,'%Y-%m-%d')).days
+
+        
 
         for i in labels:
             #STRIKE<VALUE WIN PROB => NORMSDIST(LN(STRIKEPRICE/VALUE)/CALLIV*SQRT(DAYSTOEXPIRATION/365))
@@ -170,9 +175,11 @@ def output(scrip) :
             else:
                 prob.append(0)
 
-        # Maxpain
+
+
         for i in labels:
             max_l = 0
+            
             for k in range(0, labels.index(i) + 1):
                 max_l = max_l + (i - labels[k])*call[k]
             for k in range(labels.index(i) , len(labels)):
@@ -184,7 +191,6 @@ def output(scrip) :
 
         x = np.arange(len(labels))
 
-        # Put Call ratio
         pcr = []
         j = 0
         for i in labels:
@@ -198,7 +204,6 @@ def output(scrip) :
             j = j + 1
 
 
-        # plotting starts
         width = 0.5
 
         fig, (ax1, ax2, ax3, ax4, ax5) = plt.subplots(nrows=5, ncols=1)
@@ -273,6 +278,7 @@ def output(scrip) :
 
         plt.clf()
         plt.close('all')
+
 
 if __name__ == '__main__' :
     pool = multiprocessing.Pool()

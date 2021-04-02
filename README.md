@@ -11,8 +11,8 @@ Eg - 2021-04-02-data
 
 For future reference you can save data or delete the folder with "-data" 
 
-And visualized png in output folder, with stock specific folder
-The png is named
+And visualized png in stored in output folder, within stock specific folder
+The png is named as
 29-Apr-2021-oi-2021-04-02.png
 Where 29-Apr-2021 is expiry date.
-
+And 2021-04-02 is data of formation of png file for reference

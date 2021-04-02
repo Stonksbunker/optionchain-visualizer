@@ -18,7 +18,7 @@ def make_directory(name):
     try:  
         os.mkdir(path)  
     except OSError as error:  
-        return 0
+        print(error)
 
 make_directory(today + '-data')
 make_directory('output')
@@ -59,43 +59,17 @@ fno_scrips = ['DEEPAKNTR', 'IRCTC', 'GUJGASLTD', 'ZEEL', 'MOTHERSUMI', 'BEL', 'P
 
 # get data of all stocks
 
-# def download(scrip) :
-#     fno_data_url = 'https://www.nseindia.com/api/quote-derivative?symbol=' + requests.utils.quote(scrip)
-#     resp = requests.get(url=nse_url, headers=request_headers)
-#     if resp.ok:
-#         req_cookies = dict(nsit=resp.cookies['nsit'], nseappid=resp.cookies['nseappid'], ak_bmsc=resp.cookies['ak_bmsc'])
-#         response = requests.get(url=fno_data_url, headers=request_headers, cookies=req_cookies).json()
-#         with open('./data/'+ today +'-data/fno_data_' + scrip + '.json', 'w') as f:
-#             json.dump(response, f)
-
-
-# if __name__ == '__main__' :
-#     pool = multiprocessing.Pool()
-#     pool = multiprocessing.Pool(processes=2)
-#     inputs = fno_scrips
-#     outputs = pool.map(download,inputs)
-
-
-# for scrip in fno_scrips:
-#     fno_data_url = 'https://www.nseindia.com/api/quote-derivative?symbol=' + requests.utils.quote(scrip)
-#     resp = requests.get(url=nse_url, headers=request_headers)
-#     if resp.ok:
-#         req_cookies = dict(nsit=resp.cookies['nsit'], nseappid=resp.cookies['nseappid'], ak_bmsc=resp.cookies['ak_bmsc'])
-#         response = requests.get(url=fno_data_url, headers=request_headers, cookies=req_cookies).json()
-#         with open('./data/'+ today +'-data/fno_data_' + scrip + '.json', 'w') as f:
-#             json.dump(response, f)
+for scrip in fno_scrips:
+    fno_data_url = 'https://www.nseindia.com/api/quote-derivative?symbol=' + requests.utils.quote(scrip)
+    resp = requests.get(url=nse_url, headers=request_headers)
+    if resp.ok:
+        req_cookies = dict(nsit=resp.cookies['nsit'], nseappid=resp.cookies['nseappid'], ak_bmsc=resp.cookies['ak_bmsc'])
+        response = requests.get(url=fno_data_url, headers=request_headers, cookies=req_cookies).json()
+        with open('./data/'+ today +'-data/fno_data_' + scrip + '.json', 'w') as f:
+            json.dump(response, f)
 
 
 def output(scrip) :
-
-    # fno_data_url = 'https://www.nseindia.com/api/quote-derivative?symbol=' + requests.utils.quote(scrip)
-    # resp = requests.get(url=nse_url, headers=request_headers)
-    # if resp.ok:
-    #     req_cookies = dict(nsit=resp.cookies['nsit'], nseappid=resp.cookies['nseappid'], ak_bmsc=resp.cookies['ak_bmsc'])
-    #     response = requests.get(url=fno_data_url, headers=request_headers, cookies=req_cookies).json()
-    #     with open('./data/'+ today +'-data/fno_data_' + scrip + '.json', 'w') as f:
-    #         json.dump(response, f)
-
     make_directory('output/' + scrip)
     with open('./data/'+ today +'-data/fno_data_' + scrip + '.json') as g:
         perf = json.load(g)
@@ -147,6 +121,13 @@ def output(scrip) :
         ltp_put = oi_count('Put','lastPrice')
 
         underlyingValue = perf['underlyingValue']
+
+        # if perf['underlyingValue'] < 1000:
+        #     value = round(perf['underlyingValue'], -1)
+        # elif perf['underlyingValue'] >= 1000:
+        #     value = round(perf['underlyingValue'], -2)
+        # elif perf['underlyingValue'] >= 10000:
+        #     value = round(perf['underlyingValue'], -3)
 
         strikePrices  = perf['strikePrices']
         strikePrices = list(dict.fromkeys(strikePrices))

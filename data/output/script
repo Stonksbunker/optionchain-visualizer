@@ -1,0 +1,7 @@
+#!/bin/bash
+file="/mnt/F/dev/python/optionchain_visualization/data/output/list.txt"
+while IFS= read -r x
+do
+	mv -- "$x"/* "$x".png   
+	#printf '%s\n' "$x"
+done <"$file"

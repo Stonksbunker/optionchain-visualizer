@@ -1,7 +1,5 @@
 # optionchain_visualization
 
-create a folder named "data" in same directory
-
 Run this script on EOD after 6 p.m. so all data gets updated on nse website
 Optionchain data of previous working day can't be accessed on next working day so do run it every working day
 

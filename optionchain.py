@@ -23,7 +23,8 @@ def make_directory(name):
     print(error)
 
 make_directory(today + '-data')
-make_directory('output')
+make_directory('outputs')
+make_directory('outputs/'+today+'output')
 
 # start of requesting and storing data
 request_headers = {
@@ -78,7 +79,6 @@ for scrip in fno_scrips:
 # driver function
 def output(scrip):
 
-  make_directory('output/' + scrip)
   with open('./data/' + today + '-data/fno_data_' + scrip + '.json') as g:
     perf = json.load(g)
 
@@ -276,7 +276,7 @@ def output(scrip):
     ax2.plot(x, pcr)
     ax5.plot(x, prob)
 
-    plt.savefig('./data/output/' + scrip + '/' + expiry + '-oi-' + today + '.png')
+    plt.savefig('./data/outputs/'+ today +'output/' + scrip + expiry + '-oi-' + today + '.png')
 
     plt.clf()
     plt.close('all')

@@ -1,0 +1,21 @@
+#!/bin/bash
+rm -rf data/*
+fno_list_Arr=$(cat fno_main.json | jq ".[]" | jq ".[].symbol" | fzf --reverse -m -i --height=20%);
+arr=($fno_list_Arr)
+
+final="["
+for i in "${arr[@]}"
+do
+  final=$final"$i ,"
+done
+
+final=${final::-1}"]"
+ 
+echo $final
+echo $final > fno.json
+
+python3 optionchain.py
+
+rm -f fno.json
+
+sxiv data/outputs/*/.

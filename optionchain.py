@@ -54,14 +54,13 @@ if resp.ok:
     json.dump(response, f)
 
 # bringing data in memory
-with open('fno_list.json') as g:
-  fno_list = json.load(g)
+with open('fno.json') as g:
+  fno_scrips = json.load(g)
 
-fno_scrips = []
-for i in fno_list['data']:
-  fno_scrips.append(i['symbol'])
+# fno_scrips = []
+# for i in fno_list['data']:
+#   fno_scrips.append(i['symbol'])
 
-# fno_scrips = ['BHEL', 'ZEEL']
 
 # requesting data of all scrips
 for scrip in fno_scrips:
@@ -74,7 +73,9 @@ for scrip in fno_scrips:
     response = requests.get(
       url=fno_data_url, headers=request_headers, cookies=req_cookies).json()
     with open('./data/' + today + '-data/fno_data_' + scrip + '.json', 'w') as f:
-      json.dump(response, f)
+      json.dump(response, f)    
+  print("response OK for ", scrip)
+  print("Plot generated")
 
 # driver function
 def output(scrip):

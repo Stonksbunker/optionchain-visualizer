@@ -1,5 +1,4 @@
-import dash_core_components as dcc
-import dash_html_components as html
+from dash import dcc, html
 from dash.dependencies import Input, Output
 import dash
 import scipy.integrate as integrate
@@ -10,10 +9,11 @@ import datetime
 import json
 import requests
 
-# today's date
-today = str(datetime.date.today())
+# # today's date
+# # today = str(datetime.date.today())
+today = '2021-11-09'
 
-# making directories
+# # making directories
 
 
 def make_directory(name):
@@ -26,8 +26,6 @@ def make_directory(name):
 
 
 make_directory(today + '-data')
-make_directory('outputs')
-make_directory('outputs/'+today+'output')
 
 request_headers = {
     'Host': 'www.nseindia.com',
@@ -45,14 +43,14 @@ nse_url = 'https://www.nseindia.com/'
 
 
 def fetch_data(scrip):
-    try:
+    if os.path.exists('./data/' + today + '-data/fno_data_' + scrip + '.json'):
         perf = {}
 
         with open('./data/' + today + '-data/fno_data_' + scrip + '.json') as g:
             perf = json.load(g)
 
         return perf
-    except:
+    else:
         fno_data_url = 'https://www.nseindia.com/api/quote-derivative?symbol=' + \
             requests.utils.quote(scrip)
         resp = requests.get(url=nse_url, headers=request_headers)
@@ -71,152 +69,173 @@ def fetch_data(scrip):
 
 
 def expiry(scrip):
-    perf = fetch_data(scrip)
+    try:
+        perf = fetch_data(scrip)
 
-    # listing all expiry dates
-    dates = list(dict.fromkeys(perf['expiryDates']))
+        # listing all expiry dates
+        dates = list(dict.fromkeys(perf['expiryDates']))
 
-    # ther are three differnt expiry options contract
-    return dates[0]
+        # ther are three differnt expiry options contract
+        return dates[0]
+    except:
+        return 0
 
 
 def labels(scrip):
-    perf = fetch_data(scrip)
-    exp = expiry(scrip)
+    try:
+        perf = fetch_data(scrip)
+        exp = expiry(scrip)
 
-    labels = []
+        labels = []
 
-    # listing strikes price in sorted order
-    for i in perf['stocks']:
-        if i['metadata']['expiryDate'] == exp:
-            labels.append(i['metadata']['strikePrice'])
+        # listing strikes price in sorted order
+        for i in perf['stocks']:
+            if i['metadata']['expiryDate'] == exp:
+                labels.append(i['metadata']['strikePrice'])
 
-    labels = list(dict.fromkeys(labels))
-    labels.sort()
+        labels = list(dict.fromkeys(labels))
+        labels.sort()
 
-    return labels
+        return labels
+    except:
+        return 0
 
 
 def data_count(scrip, type, value):
-    oi = []
-    perf = fetch_data(scrip)
-    label = labels(scrip)
-    exp = expiry(scrip)
+    try:
+        oi = []
+        perf = fetch_data(scrip)
+        label = labels(scrip)
+        exp = expiry(scrip)
 
-    for i in label:
-        temp = len(oi)
-        for j in perf['stocks']:
-            if j['metadata']['expiryDate'] == exp and j['metadata']['optionType'] == type:
-                if str(j['metadata']['strikePrice']) == str(i):
-                    if value != 'lastPrice':
-                        oi.append(j['marketDeptOrderBook']
-                                  ['tradeInfo'][value])
-                    else:
-                        oi.append(j['metadata'][value])
+        for i in label:
+            temp = len(oi)
+            for j in perf['stocks']:
+                if j['metadata']['expiryDate'] == exp and j['metadata']['optionType'] == type:
+                    if str(j['metadata']['strikePrice']) == str(i):
+                        if value != 'lastPrice':
+                            oi.append(j['marketDeptOrderBook']
+                                      ['tradeInfo'][value])
+                        else:
+                            oi.append(j['metadata'][value])
 
-        if temp == len(oi):
-            oi.append(0)
+            if temp == len(oi):
+                oi.append(0)
 
-    return oi
+        return oi
+    except:
+        return 0
 
 
 def probability(scrip):
-    nearest = []
-    perf = fetch_data(scrip)
-    underlyingValue = perf['underlyingValue']
-    strikePrices = perf['strikePrices']
-    strikePrices = list(dict.fromkeys(strikePrices))
+    try:
+        nearest = []
+        perf = fetch_data(scrip)
+        underlyingValue = perf['underlyingValue']
+        strikePrices = perf['strikePrices']
+        strikePrices = list(dict.fromkeys(strikePrices))
 
-    label = labels(scrip)
-    exp = expiry(scrip)
+        label = labels(scrip)
+        exp = expiry(scrip)
 
-    l = 0
-    for i in strikePrices:
-        nearest.append(i - underlyingValue)
+        l = 0
+        for i in strikePrices:
+            nearest.append(i - underlyingValue)
 
-    for i in nearest:
-        if i < 0:
-            nearest[l] = nearest[l] * -1
-            l = l + 1
+        for i in nearest:
+            if i < 0:
+                nearest[l] = nearest[l] * -1
+                l = l + 1
 
-    value = strikePrices[nearest.index(min(nearest))]
+        value = strikePrices[nearest.index(min(nearest))]
 
-    for j in perf['stocks']:
-        if j['metadata']['expiryDate'] == exp and j['metadata']['strikePrice'] == value:
-            if j['metadata']['optionType'] == 'Call':
-                iv_call = j['marketDeptOrderBook']['otherInfo']['impliedVolatility']
-            if j['metadata']['optionType'] == 'Put':
-                iv_put = j['marketDeptOrderBook']['otherInfo']['impliedVolatility']
+        for j in perf['stocks']:
+            if j['metadata']['expiryDate'] == exp and j['metadata']['strikePrice'] == value:
+                if j['metadata']['optionType'] == 'Call':
+                    iv_call = j['marketDeptOrderBook']['otherInfo']['impliedVolatility']
+                if j['metadata']['optionType'] == 'Put':
+                    iv_put = j['marketDeptOrderBook']['otherInfo']['impliedVolatility']
 
-    prob = []
-    daysexpiry = (datetime.datetime.strptime(exp, '%d-%b-%Y') -
-                  datetime.datetime.strptime(today, '%Y-%m-%d')).days
+        prob = []
+        daysexpiry = (datetime.datetime.strptime(exp, '%d-%b-%Y') -
+                      datetime.datetime.strptime(today, '%Y-%m-%d')).days
 
-    for i in label:
-        # STRIKE<VALUE WIN PROB => NORMSDIST(LN(STRIKEPRICE/VALUE)/CALLIV*SQRT(DAYSTOEXPIRATION/365))
-        # normsdist = (1/2pi)^2 * e^(-(z^2)/2)
-        if i < value and i > 0:
-            try:
-                normsdist = math.log(i/underlyingValue) / \
-                    ((iv_call/100)*math.sqrt(daysexpiry/365))
-                result = integrate.quad(lambda q: (
-                    (1/math.sqrt(2 * math.pi))*((math.e)**(q**2/-2.0))), -np.inf, normsdist)
-                prob.append(100 - result[0]*100)
-            except:
+        for i in label:
+            # STRIKE<VALUE WIN PROB => NORMSDIST(LN(STRIKEPRICE/VALUE)/CALLIV*SQRT(DAYSTOEXPIRATION/365))
+            # normsdist = (1/2pi)^2 * e^(-(z^2)/2)
+            if i < value and i > 0:
+                try:
+                    normsdist = math.log(i/underlyingValue) / \
+                        ((iv_call/100)*math.sqrt(daysexpiry/365))
+                    result = integrate.quad(lambda q: (
+                        (1/math.sqrt(2 * math.pi))*((math.e)**(q**2/-2.0))), -np.inf, normsdist)
+                    prob.append(100 - result[0]*100)
+                except:
+                    prob.append(0)
+            elif i > value and i > 0:
+                try:
+                    normsdist = math.log(i/underlyingValue) / \
+                        ((iv_put/100)*math.sqrt(daysexpiry/365))
+                    result = integrate.quad(lambda q: (
+                        (1/math.sqrt(2 * math.pi))*((math.e)**(q**2/-2.0))), -np.inf, normsdist)
+                    prob.append(result[0]*100)
+                except:
+                    prob.append(0)
+            else:
                 prob.append(0)
-        elif i > value and i > 0:
-            try:
-                normsdist = math.log(i/underlyingValue) / \
-                    ((iv_put/100)*math.sqrt(daysexpiry/365))
-                result = integrate.quad(lambda q: (
-                    (1/math.sqrt(2 * math.pi))*((math.e)**(q**2/-2.0))), -np.inf, normsdist)
-                prob.append(result[0]*100)
-            except:
-                prob.append(0)
-        else:
-            prob.append(0)
 
-    return prob
+        return prob
+    except:
+        return 0
 
 
 def pcr(scrip):
-    j = 0
-    ratio = []
-    call = data_count(scrip, 'Call', 'openInterest')
-    put = data_count(scrip, 'Put', 'openInterest')
-    label = labels(scrip)
+    try:
+        j = 0
+        ratio = []
+        call = data_count(scrip, 'Call', 'openInterest')
+        put = data_count(scrip, 'Put', 'openInterest')
+        label = labels(scrip)
 
-    for i in label:
-        if call[j] == 0:
-            ratio.append(1)
-        else:
-            if put[j]/call[j] > 10:
-                ratio.append(-1)
+        for i in label:
+            if call[j] == 0:
+                ratio.append(1)
             else:
-                ratio.append(put[j]/call[j])
-        j = j + 1
+                if put[j]/call[j] > 10:
+                    ratio.append(-1)
+                else:
+                    ratio.append(put[j]/call[j])
+            j = j + 1
 
-    return ratio
+        return ratio
+    except:
+        return 0
 
 
 def maxpain(scrip):
+    try:
+        call = data_count(scrip, 'Call', 'openInterest')
+        put = data_count(scrip, 'Put', 'openInterest')
+        label = labels(scrip)
+        maxp = []
 
-    call = data_count(scrip, 'Call', 'openInterest')
-    put = data_count(scrip, 'Put', 'openInterest')
-    label = labels(scrip)
+        for i in label:
+            max_l = 0
 
-    for i in labels:
-        max_l = 0
+            for k in range(0, label.index(i) + 1):
+                max_l = max_l + (i - label[k])*call[k]
 
-        for k in range(0, labels.index(i) + 1):
-            max_l = max_l + (i - labels[k])*call[k]
+            for k in range(label.index(i), len(label)):
+                max_l = max_l + (label[k] - i)*put[k]
 
-        for k in range(labels.index(i), len(labels)):
-            max_l = max_l + (labels[k] - i)*put[k]
+            maxp.append(max_l)
 
-        maxpain.append(max_l)
+        maxp[0] = 0
+        minpos = maxp.index(min(maxp))
 
-    minpos = maxpain.index(min(maxpain))
+        return maxp
+    except:
+        return 0
 
 
 app = dash.Dash('Optionchain', external_stylesheets=[
@@ -225,7 +244,7 @@ app = dash.Dash('Optionchain', external_stylesheets=[
 
 # bringing data in memory
 with open('fno.json') as g:
-  fno_scrips = json.load(g)
+    fno_scrips = json.load(g)
 
 
 app.layout = html.Div([
@@ -250,6 +269,9 @@ app.layout = html.Div([
         ]),
         dcc.Tab(label='Probability', children=[
             dcc.Graph(id="probab")
+        ]),
+        dcc.Tab(label='Maxpain', children=[
+            dcc.Graph(id="maxpain")
         ]),
     ])
 ], style={'width': '500'})
@@ -323,7 +345,6 @@ def update_graph(selected_dropdown_value):
 
 @ app.callback(Output('probab', 'figure'), [Input('scrip', 'value')])
 def update_graph(selected_dropdown_value):
-    # inp = output(selected_dropdown_value)
     return {
         'data': [{
             'x': labels(selected_dropdown_value),
@@ -335,5 +356,34 @@ def update_graph(selected_dropdown_value):
     }
 
 
+@ app.callback(Output('maxpain', 'figure'), [Input('scrip', 'value')])
+def update_graph(selected_dropdown_value):
+    return {
+        'data': [{
+            'x': labels(selected_dropdown_value),
+            'y': maxpain(selected_dropdown_value),
+            'type': 'bar', 'name': 'maxpain'
+        }
+        ],
+        'layout': {'margin': {'l': 40, 'r': 0, 't': 20, 'b': 30}}
+    }
+
+
 if __name__ == '__main__':
     app.run_server()
+
+
+# for scrip in fno_scrips:
+#     fno_data_url = 'https://www.nseindia.com/api/quote-derivative?symbol=' + \
+#         requests.utils.quote(scrip['value'])
+#     resp = requests.get(url=nse_url, headers=request_headers)
+#     if resp.ok:
+#         req_cookies = dict(
+#             nsit=resp.cookies['nsit'], nseappid=resp.cookies['nseappid'], ak_bmsc=resp.cookies['ak_bmsc'])
+#         response = requests.get(
+#             url=fno_data_url, headers=request_headers, cookies=req_cookies).json()
+#         with open('./data/' + today + '-data/fno_data_' + scrip['value'] + '.json', 'w') as f:
+#             json.dump(response, f)
+
+#         with open('./data/' + today + '-data/fno_data_' + scrip['value'] + '.json') as g:
+#             perf = json.load(g)

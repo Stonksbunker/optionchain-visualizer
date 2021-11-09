@@ -198,13 +198,15 @@ app = dash.Dash('Optionchain', external_stylesheets=[
                 'https://codepen.io/chriddyp/pen/bWLwgP.css'])
 
 
-with open('fno_list.json', 'r') as g:
-    fno_list = json.load(g)
+# bringing data in memory
+with open('fno.json') as g:
+  fno_scrips = json.load(g)
 
-fno_scrips = []
-for i in fno_list['data']:
-    fno_scrips.append({'label': i['symbol'], 'value': i['symbol']})
-print (fno_scrips)
+# fno_scrips = []
+# for i in fno_list['data']:
+#   fno_scrips.append(i['symbol'])
+ 
+
 app.layout = html.Div([
     dcc.Dropdown(
         id='scrip',

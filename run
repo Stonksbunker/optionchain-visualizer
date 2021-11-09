@@ -3,10 +3,12 @@ rm -rf data/*
 fno_list_Arr=$(cat fno_main.json | jq ".[]" | jq ".[].symbol" | fzf --reverse -m -i --height=20%);
 arr=($fno_list_Arr)
 
+[{'label': 'WHIRLPOOL', 'value': 'WHIRLPOOL'},
+
 final="["
 for i in "${arr[@]}"
 do
-  final=$final"$i ,"
+  final=$final"{ 'label':${i//\"/\'}, 'value':${i//\"/\'} } ,"
 done
 
 final=${final::-1}"]"
@@ -14,8 +16,8 @@ final=${final::-1}"]"
 echo $final
 echo $final > fno.json
 
-python3 optionchain.py
+# python3 optionchain.py
 
-rm -f fno.json
+# rm -f fno.json
 
-sxiv -t data/outputs/*/.
+# sxiv -t data/outputs/*/.

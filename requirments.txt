@@ -1,4 +1,9 @@
 numpy
 scipy
 requests
+flask
 matplotlib
+dash
+dash_core_components
+dash_html_components
+requests

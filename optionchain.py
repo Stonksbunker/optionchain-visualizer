@@ -204,7 +204,7 @@ with open('fno_list.json', 'r') as g:
 fno_scrips = []
 for i in fno_list['data']:
     fno_scrips.append({'label': i['symbol'], 'value': i['symbol']})
-
+print (fno_scrips)
 app.layout = html.Div([
     dcc.Dropdown(
         id='scrip',

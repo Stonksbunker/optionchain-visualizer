@@ -1,2 +1,0 @@
-sudo pacman -S --needed fzf sxiv jq 
-

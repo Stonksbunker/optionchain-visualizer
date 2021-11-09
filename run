@@ -1,5 +1,6 @@
 #!/bin/bash
-rm -rf data/*
+rm -rf data
+mkdir -p data
 fno_list_Arr=$(cat fno_main.json | jq ".[]" | jq ".[].symbol" | fzf --reverse -m -i --height=80%);
 arr=($fno_list_Arr)
 

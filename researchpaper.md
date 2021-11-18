@@ -5,7 +5,7 @@ numbersections: true
 author: 
 - "**Umang Bhalla**"
 autoEqnLabels: true
-fontsize: 8pt
+fontsize: 11pt
 mainfont: TeX Gyre Pag
 geometry:
 - top=30mm
@@ -31,7 +31,7 @@ date: November 17, 2021
 keywords: [nothing, nothingness]
 output: pdf_document
 abstract:
-	In this research paper we dive deep into webscrapping , flask Server setup and Optionchain stocks visualisation 
+	In this research paper we dive deep into webscrapping , flask server setup and Optionchain stocks visualisation 
 ---
 <!-- # Appendix {-} -->
 \tableofcontents
@@ -42,6 +42,9 @@ abstract:
 
 \Begin{multicols}{2}
 # Introduction 
+Optionchain visualiser is a collection of multiple technologies: Python as the programming language, Bash as a scripting language, JSON as a database, Flask as a software-based server, Raspberry Pi as hardware and Arch Linux as operating system.  
+
+
 **Optionchain visualiser** is a collection of *multiple* technologies, like **python programming language**, **bash scripting**, **json** as database, **flask** as software based server , **Raspberry pi 4b** as hardware server and **arch linux** as operating system [^1].  
 
 Using web-scraping we extract data from NSE [^2] which gets saved in database (as json file) then using matplotlib in first varient and dash(component in plotty [^plotty]) we generate static pngs and interactive graphs.
@@ -68,11 +71,27 @@ Strike price : current price of stock
 
 Implied volatility is not directly observable, so it needs to be solved using the five other inputs of the Black-Scholes model, which are:
 - The market price of the option.
+https://www.investopedia.com/terms/m/market-price.asp
 - The underlying stock price.
 - The strike price.
+https://www.investopedia.com/terms/s/strikeprice.asp
 - The time to expiration.
 - The risk-free interest rate.
 
+### Market Price
+The market price is the current price at which an asset or service can be bought or sold. The market price of an asset or service is determined by the forces of supply and demand. The price at which quantity supplied equals quantity demanded is the market price.
+
+
+Shocks to either the supply or the demand for a good or service can cause the market price for a good or service to change. A supply shock is an unexpected event that suddenly changes the supply of a good or service. A demand shock is a sudden event that increases or decreases the demand for a good or service. Some examples of supply shock are interest rate cuts, tax cuts, government stimulus, terrorist attacks, natural disasters, and stock market crashes. Some examples of demand shock include a steep rise in oil and gas prices or other commodities, political turmoil, natural disasters, and breakthroughs in production technology.
+
+### Strike Price
+A strike price is the set price at which a derivative contract can be bought or sold when it is exercised. For call options, the strike price is where the security can be bought by the option holder; for put options, the strike price is the price at which the security can be sold.
+
+
+Strike prices are used in derivatives (mainly options) trading. Derivatives are financial products whose value is based (derived) on the underlying asset, usually another financial instrument. The strike price is a key variable of call and put options. For example, the buyer of a call option would have the right, but not the obligation, to buy the underlying security in the future at the specified strike price.
+
+
+## Black-Scholes
 Implied volatility is calculated by taking the market price of the option, entering it into the Black-Scholes formula, and back-solving for the value of the volatility. But there are various approaches to calculating implied volatility. One simple approach is to use an iterative search, or trial and error, to find the value of implied volatility.
 Iv calculation done by nse
 
@@ -253,10 +272,23 @@ python3 optionchain.py
 
 # Propose work
 
-# Block diagram
+Make easy visualize most difficult concept inside financial markets i.e. OC
+OC
+https://www.investopedia.com/terms/o/optionchain.asp
+
+Use basic data to find probability to take informed decision
+
+
+
+## Block diagram
 
 # Data Set and visualization 
-like excel sheet
+
+Call Put bta denge
+Maxpain
+https://www.investopedia.com/terms/m/maxpain.asp
+https://zerodha.com/varsity/chapter/max-pain-pcr-ratio/
+
 
 # Result and Implementation
 minimum requirement, setup

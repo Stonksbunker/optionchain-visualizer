@@ -1,5 +1,7 @@
 ---
-title: "**YASP: Yet Another Stock Predictor**"
+title: |
+  ![](logo.png){width=1in}  
+  Adding a Logo to LaTeX Title
 papersize: a4
 numbersections: true
 author: 
@@ -31,7 +33,7 @@ date: November 17, 2021
 keywords: [nothing, nothingness]
 output: pdf_document
 abstract:
-	In this research paper we dive deep into webscrapping , flask server setup and Optionchain stocks visualisation 
+	"Analyzing **Call** and **Put** option values can be quite intimidating sometimes and predicting future prices values is more difficult. So to make that easier, we scrapped datas from the **NSE** website and used it for plotting graphs to make analysis of Call and Put vales, **PCR** (Put-Call Ratio), **LTP** and **Maxpain** simpler and less time consuming. We also plotted a probability graph using **normal** **distribution** method which specifies the range in which stock price is more likely to be till expiry date of the option. All of this is packaged into a simple [**github** **repo**](https://github.com/Stonksbunker/optionchain-visualizer) in two variants. First variant is more user-centric and can take user input as ticker symbol to generate png of calculated graph and save it locally. While the second variant is meant to run headless as a flask server on Raspberry Pi 4b."
 ---
 <!-- # Appendix {-} -->
 \tableofcontents
@@ -70,13 +72,12 @@ After this is done, the collected json data is add to *data* subdirectory and na
 Strike price : current price of stock
 
 Implied volatility is not directly observable, so it needs to be solved using the five other inputs of the Black-Scholes model, which are:
-- The market price of the option.
-https://www.investopedia.com/terms/m/market-price.asp
-- The underlying stock price.
-- The strike price.
-https://www.investopedia.com/terms/s/strikeprice.asp
-- The time to expiration.
-- The risk-free interest rate.
+
+* The market price of the option.
+* The underlying stock price.
+* The strike price.
+* The time to expiration.
+* The risk-free interest rate.
 
 ### Market Price
 The market price is the current price at which an asset or service can be bought or sold. The market price of an asset or service is determined by the forces of supply and demand. The price at which quantity supplied equals quantity demanded is the market price.
@@ -96,9 +97,9 @@ Implied volatility is calculated by taking the market price of the option, enter
 Iv calculation done by nse
 
 
-Call iv -> call implied volatility (given by nse)
-put iv -> put option implied volatility (given by nse)
-Days of expiry -> expiryDate - today
+Call IV :: call implied volatility (given by nse)
+put IV :: put option implied volatility (given by nse)
+Days of expiry :: expiryDate  ( today )
 
 \End{multicols}
 
@@ -108,6 +109,7 @@ Days of expiry -> expiryDate - today
 > NORMSDIST(LN(STRIKEPRICE/VALUE)/CALLIV\*SQRT(DAYSTOEXPIRATION/365))
 
 > NORMSDIST = (0.5\*pi)^2^ \* e^(-(z²)/2)^
+
 
 ```{.python .numberLines}
 def probability(scrip):
@@ -176,63 +178,32 @@ def probability(scrip):
 Calculation of theoretical base price of contracts as per Black –Scholes formula:
 The options price for a Call option shall be computed as follows:
 
-C = S * N (d1) – X * e ^ (- rt )\* N (d2)
 
-
-and the price for a Put option is :
-
-
-P = X * e ^ (- rt ) * N (-d2) – S * N (-d1)
-
-
-where :
-
-
-d1 = ln (S / X) + (r + s ^ 2 / 2) * t
-
-
-s * vt
-
-
-d2 = ln (S / X) + (r – s 2 / 2) * t
-
-
-s * vt
-
-
-= d1 - s * vt
-
-
-and
-C = price of a Call option
-
-
-P = price of a Put option
-
-
-S = price of the underlying asset
-
-
-X = Strike price of the option
-
-
-r = rate of interest (Rate of interest shall be the relevant MIBOR rate for the day)
-
-
-t = time to expiration
-
-
-s = volatility (Volatility shall be the higher of the underlying volatility or the the near month futures contact volatility on the relevant day.)
-
-
-N represents a standard normal distribution with mean = 0 and standard deviation = 1, and ln represents the natural logarithm of a number. Natural logarithms are based on the constant e (2.71828182845904).
-
-
+| C = S * N (d1) – X * e ^ (- rt )\* N (d2)
+| and the price for a Put option is :
+| P = X * e ^ (- rt ) * N (-d2) – S * N (-d1)
+| where :
+| d1 = ln (S / X) + (r + s ^ 2 / 2) * t
+| s * vt
+| d2 = ln (S / X) + (r – s 2 / 2) * t
+| s * vt = d1 - s * vt
+| and
+| C = price of a Call option
+| P = price of a Put option
+| S = price of the underlying asset
+| X = Strike price of the option
+| r = rate of interest (Rate of interest shall be the relevant MIBOR rate for the day)
+| t = time to expiration
+| s = volatility (Volatility shall be the higher of the underlying volatility or the the near month futures contact volatility on the relevant day.)
+| N represents a standard normal distribution with mean = 0 and standard deviation = 1, 
+| ln represents the natural logarithm of a number. Natural logarithms are based on the constant e (2.71828182845904)
 
 
 
 ## Different varients of the project {#sec:varients}
+
 ### User input based
+
 This varient primarily relies on user to decide stock about which he/she has to scrape information. Using the run [^prerun] script provided in the repository user call the fzf [^fzf] prompt. 
 In the fzf [^fzf] prompt user is supposed to write name of the stock they want to search, the search usses fuzzy algorithm [^fuzzy] , hence if we write *SBI* in the search prompt,  **SBIN** , **SBILIFE** , **SBICARD** gets displayed as results ; then user can press tab to select the symbol [^symbols] on the promt and press it again to select the enxt prompt or search for other symbol [^symbols] to add the array that will be fed to python script to start the scrape.
 
@@ -274,28 +245,65 @@ python3 optionchain.py
 
 Make easy visualize most difficult concept inside financial markets i.e. OC
 OC
-https://www.investopedia.com/terms/o/optionchain.asp
 
 Use basic data to find probability to take informed decision
 
 
 
-## Block diagram
-
 # Data Set and visualization 
 
-Call Put bta denge
-Maxpain
-https://www.investopedia.com/terms/m/maxpain.asp
-https://zerodha.com/varsity/chapter/max-pain-pcr-ratio/
+## Call & put
+https://www.investopedia.com/terms/c/calloption.asp
+https://www.investopedia.com/terms/p/putoption.asp
 
+## PCR
+https://www.investopedia.com/ask/answers/06/putcallratio.asp
+
+## Change
+Change in LTP
+
+
+## LTP
+LTP of option contract
+
+## Probability
+Main above
+
+## Maxpain
+https://www.investopedia.com/terms/m/maxpain.asp
+
+request_headers = {
+    'Host': 'www.nseindia.com',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:82.0) Gecko/20100101 Firefox/82.0',
+'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+    'Accept-Language': 'en-US,en;q=0.5',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'DNT': '1',
+    'Connection': 'keep-alive',
+    'Upgrade-Insecure-Requests': '1',
+    'Pragma': 'no-cache',
+    'Cache-Control': 'no-cache',
+}
 
 # Result and Implementation
 minimum requirement, setup
+![This is the caption\label{mylabel}](logo.png)
+See figure \ref{mylabel}.
 
-# Conclusion and Future
+![Caption.](logo.png) {#fig:description}
+@fig:description
+
+# suggestions for future reference
+The investigation carried out in this work concerns graphs generated using probability by normal distribution only. The same study can be done by using Machine Learning (ML) methods and algorithms, namely LSTM, DRNN and RNN. This may improve the data prediction and probability of the graphs and also help in creating some new graphs regarding future values of the stock which will be more accurate and economic for the user.
 
 # References
+
+https://www.investopedia.com/terms/o/optionchain.asp
+https://www.investopedia.com/terms/m/maxpain.asp
+https://zerodha.com/varsity/chapter/max-pain-pcr-ratio/
+https://www.investopedia.com/terms/m/market-price.asp
+https://www.investopedia.com/terms/s/strikeprice.asp
+
 
 
 \End{multicols}
